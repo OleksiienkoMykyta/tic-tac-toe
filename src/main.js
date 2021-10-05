@@ -22,101 +22,108 @@ function app() {
     }
 
     function win() {
-        let cellsArr = [document.querySelector('#c-0'), document.querySelector('#c-1'), document.querySelector('#c-2'), document.querySelector('#c-3'), document.querySelector('#c-4'), document.querySelector('#c-5'), document.querySelector('#c-6'), document.querySelector('#c-7'), document.querySelector('#c-8')];
-        let textNodeCh = document.createTextNode('Crosses won!');
-        let textNodeR = document.createTextNode('Toes won!');
-        let textNodeDraw = document.createTextNode('It\'s a draw!');
+        let cellsArr = document.querySelectorAll('.cell');
+        cellsArr = Array.from(cellsArr);
+        cellsArr.sort((a, b) => {
+            return cellsId(a) - cellsId(b);
+        });
+        let rowLength = Math.sqrt(cellsArr.length);
 
-        if (document.querySelector('.won-message').childNodes[0] instanceof Text) {
-            document.querySelector('.won-message').childNodes[0].remove();
-            document.querySelector('.won-title').classList.add('hidden');
+        function horizontalWin(cellsArr) {
+            let horizontalWinner = true;
+            for (let i = 0; i < cellsArr.length; i += rowLength) {
+                let firstCellType = cellsType(cellsArr[i]); // Определяем доп. класс яцейки (сh - крестик, r - нолик, null - пусто)
+                if (!firstCellType) { // Если первая ячейка ряда при вызове на ней функции cellsType будет равна null, то код дальше выполняться не будет, мы перейдем к следующей итерации цикла
+                    continue;
+                }
+                for (let j = i; j < i + rowLength; j += 1) {
+                    if (cellsType(cellsArr[j]) !== firstCellType) { // если доп. класс j ячейчи не соответствует классу первой ячейки в ряду, то прерываем выполнение вложеного цикла
+                        horizontalWinner = false;
+                        break;
+                    }
+                    if (j === i + rowLength - 1) {
+                        for (let k = j; k >= i; k += - 1) {
+                            document.querySelector(`#c-${[k]}`).classList.add(`${firstCellType}`, 'horizontal', 'win');
+                            if (document.querySelector('.won-message').childNodes[0] instanceof Text) {
+                                document.querySelector('.won-message').childNodes[0].remove();
+                                document.querySelector('.won-title').classList.add('hidden');
+                            }
+                            if (firstCellType === 'ch') {
+                                document.querySelector('.won-title').classList = 'won-title';
+                                let textNodeCh = document.createTextNode('Crosses won!');
+                                document.querySelector('.won-message').appendChild(textNodeCh);
+                            }
+                            if (firstCellType === 'r') {
+                                document.querySelector('.won-title').classList = 'won-title';
+                                let textNodeR = document.createTextNode('Toes won!');
+                                document.querySelector('.won-message').appendChild(textNodeR);
+                            }
+                        }
+                     }
+                }
+                if (horizontalWinner === true) {
+                    return true;
+                }
+            }
         }
-// ==========================================================================================================================================
-        // horizontal cross
-        if (cellsArr[0].classList.contains('ch') && cellsArr[1].classList.contains('ch') && cellsArr[2].classList.contains('ch')) {
-            getWinStatus(0, 1, 2, 'horizontal', 'Crosses won!');
-            return;
-        }
-        if (cellsArr[3].classList.contains('ch') && cellsArr[4].classList.contains('ch') && cellsArr[5].classList.contains('ch')) {
-            getWinStatus(3, 4, 5, 'horizontal', 'Crosses won!');
-            return;
-        }
-        if (cellsArr[6].classList.contains('ch') && cellsArr[7].classList.contains('ch') && cellsArr[8].classList.contains('ch')) {
-            getWinStatus(6, 7, 9, 'horizontal', 'Crosses won!');
-            return;
-        }
-// ==========================================================================================================================================
-        // diagonal cross
-        if (cellsArr[0].classList.contains('ch') && cellsArr[4].classList.contains('ch') && cellsArr[8].classList.contains('ch')) {
-            getWinStatus(0, 4, 8, 'diagonal-right', 'Crosses won!');
-            return;
-        }
-        if (cellsArr[6].classList.contains('ch') && cellsArr[4].classList.contains('ch') && cellsArr[2].classList.contains('ch')) {
-            getWinStatus(6, 4, 2, 'diagonal-left', 'Crosses won!');
-            return;
+        // function verticalWin(cellsArr) {
+        //     let verticalWinner = true;
+        //     for (let i = 0; i < cellsArr.length; i += rowLength) {
+        //         let firstCellType = cellsType(cellsArr[i]); // Определяем доп. класс яцейки (сh - крестик, r - нолик, null - пусто)
+        //         if (!firstCellType) { // Если первая ячейка ряда при вызове на ней функции cellsType будет равна null, то код дальше выполняться не будет, мы перейдем к следующей итерации цикла
+        //             continue;
+        //         }
+        //         for (let j = i; j < i + rowLength; j += 1) {
+        //             if (cellsType(cellsArr[j]) !== firstCellType) { // если доп. класс j ячейчи не соответствует классу первой ячейки в ряду, то прерываем выполнение вложеного цикла
+        //                 verticalWinner = false;
+        //                 break;
+        //             }
+        //             if (j === i + rowLength - 1) {
+        //                 for (let k = j; k >= i; k += - 1) {
+        //                     document.querySelector(`#c-${[k]}`).classList.add(`${firstCellType}`, 'horizontal', 'win');
+        //                     if (document.querySelector('.won-message').childNodes[0] instanceof Text) {
+        //                         document.querySelector('.won-message').childNodes[0].remove();
+        //                         document.querySelector('.won-title').classList.add('hidden');
+        //                     }
+        //                     if (firstCellType === 'ch') {
+        //                         document.querySelector('.won-title').classList = 'won-title';
+        //                         let textNodeCh = document.createTextNode('Crosses won!');
+        //                         document.querySelector('.won-message').appendChild(textNodeCh);
+        //                     }
+        //                     if (firstCellType === 'r') {
+        //                         document.querySelector('.won-title').classList = 'won-title';
+        //                         let textNodeR = document.createTextNode('Toes won!');
+        //                         document.querySelector('.won-message').appendChild(textNodeR);
+        //                     }
+        //                 }
+        //              }
+        //         }
+        //         if (verticalWinner === true) {
+        //             return true;
+        //         }
+        //     }
+        // }
+        //
+        // verticalWin(cellsArr)
+
+        horizontalWin(cellsArr);
+
+        function cellsId(node) {
+            let id = node.id.split('-')[1];
+            return Number.parseInt(id);
         }
 
-// ==========================================================================================================================================
-        // vertical cross
-        if (cellsArr[0].classList.contains('ch') && cellsArr[3].classList.contains('ch') && cellsArr[6].classList.contains('ch')) {
-            getWinStatus(0, 3, 6, 'vertical', 'Crosses won!');
-            return;
-        }
-        if (cellsArr[1].classList.contains('ch') && cellsArr[4].classList.contains('ch') && cellsArr[7].classList.contains('ch')) {
-            getWinStatus(1, 4, 7, 'vertical', 'Crosses won!');
-            return;
-        }
-        if (cellsArr[2].classList.contains('ch') && cellsArr[5].classList.contains('ch') && cellsArr[8].classList.contains('ch')) {
-            getWinStatus(2, 5, 8, 'vertical', 'Crosses won!');
-            return;
+        function cellsType(cellsArr) {
+            if (cellsArr.classList.contains('ch')) {
+                return 'ch';
+            }
+            if (cellsArr.classList.contains('r')) {
+                return 'r';
+            }
+            return  null;
         }
 
-// ==========================================================================================================================================
-        // horizontal toes
-        if (cellsArr[0].classList.contains('r') && cellsArr[1].classList.contains('r') && cellsArr[2].classList.contains('r')) {
-            getWinStatus(0, 1, 2, 'horizontal', 'Toes won!');
-            return;
-        }
-        if (cellsArr[3].classList.contains('r') && cellsArr[4].classList.contains('r') && cellsArr[5].classList.contains('r')) {
-            getWinStatus(3, 4, 5, 'horizontal', 'Toes won!');
-        }
-        if (cellsArr[6].classList.contains('r') && cellsArr[7].classList.contains('r') && cellsArr[8].classList.contains('r')) {
-            getWinStatus(6, 7, 8, 'horizontal', 'Toes won!');
-        }
-// ==========================================================================================================================================
-        // vertical toes
-        if (cellsArr[0].classList.contains('r') && cellsArr[3].classList.contains('r') && cellsArr[6].classList.contains('r')) {
-            getWinStatus(0, 3, 6, 'vertical', 'Toes won!');
-            return;
-        }
-        if (cellsArr[1].classList.contains('r') && cellsArr[4].classList.contains('r') && cellsArr[7].classList.contains('r')) {
-            getWinStatus(1, 4, 7, 'vertical', 'Toes won!');
-            return;
-        }
-        if (cellsArr[2].classList.contains('r') && cellsArr[5].classList.contains('r') && cellsArr[8].classList.contains('r')) {
-            getWinStatus(2, 5, 8, 'vertical', 'Toes won!');
-            return;
-        }
-// =========================================================================================================================================
-        // diagonal toes
-        if (cellsArr[0].classList.contains('r') && cellsArr[4].classList.contains('r') && cellsArr[8].classList.contains('r')) {
-            getWinStatus(0, 4, 8, 'diagonal-right', 'Toes won!');
-            return;
-        }
-        if (cellsArr[6].classList.contains('r') && cellsArr[4].classList.contains('r') && cellsArr[2].classList.contains('r')) {
-            getWinStatus(6, 4, 2, 'diagonal-left', 'Toes won!');
-            return;
-        }
-
-// ============================================================================================================================================
-        // A draw
-        if (cellsArr[0].classList.length === 2 && cellsArr[1].classList.length === 2 && cellsArr[2].classList.length === 2 && cellsArr[3].classList.length === 2 && cellsArr[4].classList.length === 2 && cellsArr[5].classList.length === 2 && cellsArr[6].classList.length === 2 && cellsArr[7].classList.length === 2 && cellsArr[8].classList.length === 2) {
-            document.querySelector('.won-title').classList = 'won-title';
-            document.querySelector('.won-message').appendChild(textNodeDraw);
-            cellsDisable();
-        }
     }
-
     win();
 
     function setStorage() {
@@ -134,8 +141,8 @@ function app() {
         }
     }
 
-    function cellsAdder(eventTarg, cellVal) {
-        cells.push({
+    function cellsAdder(arr, eventTarg, cellVal) {
+        arr.push({
             idVal: eventTarg.id,
             fieldVal: cellVal,
         });
@@ -165,8 +172,6 @@ function app() {
         dump();
 
         if (cells !== null) {
-            console.log('проверка пройдена');
-            console.log(cells);
             for (let i = 0; i < cells.length; i += 1) {
                 if (cells[i].idVal === '') {
                     cells.pop();
@@ -222,9 +227,9 @@ function app() {
     field.addEventListener('click', (e) => {
         if (e.target.classList.contains('r') === false && e.target.classList.contains('ch') === false) {
             if (cells.length % 2 === 0) {
-                cellsAdder(e.target, 'ch')
+                cellsAdder(cells, e.target, 'ch')
             } else {
-                cellsAdder(e.target, 'r')
+                cellsAdder(cells, e.target, 'r')
             }
         }
         builder(cells, e.target.id);
