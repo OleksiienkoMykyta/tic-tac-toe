@@ -5,22 +5,6 @@ function app() {
         getStorage();
     }
 
-    function cellsDisable() {
-        field.style.pointerEvents = 'none';
-
-    }
-
-    function getWinStatus(num1, num2, num3, winClass, textNode) {
-        let inputNode = document.createTextNode(textNode);
-        document.querySelector('.won-title').classList = 'won-title';
-        document.querySelector('.won-message').appendChild(inputNode);
-        document.querySelector(`#c-${num1}`).classList.add('win', `${winClass}`);
-        document.querySelector(`#c-${num2}`).classList.add('win', `${winClass}`);
-        document.querySelector(`#c-${num3}`).classList.add('win', `${winClass}`);
-        document.createTextNode(textNode);
-        cellsDisable();
-    }
-
     function win() {
         let cellsArr = document.querySelectorAll('.cell');
         cellsArr = Array.from(cellsArr);
@@ -30,8 +14,8 @@ function app() {
         let rowLength = Math.sqrt(cellsArr.length);
 
         function horizontalWin(cellsArr) {
-            let horizontalWinner = true;
             for (let i = 0; i < cellsArr.length; i += rowLength) {
+                let horizontalWinner = true;
                 let firstCellType = cellsType(cellsArr[i]); // Определяем доп. класс яцейки (сh - крестик, r - нолик, null - пусто)
                 if (!firstCellType) { // Если первая ячейка ряда при вызове на ней функции cellsType будет равна null, то код дальше выполняться не будет, мы перейдем к следующей итерации цикла
                     continue;
@@ -41,70 +25,173 @@ function app() {
                         horizontalWinner = false;
                         break;
                     }
-                    if (j === i + rowLength - 1) {
-                        for (let k = j; k >= i; k += - 1) {
-                            document.querySelector(`#c-${[k]}`).classList.add(`${firstCellType}`, 'horizontal', 'win');
-                            if (document.querySelector('.won-message').childNodes[0] instanceof Text) {
-                                document.querySelector('.won-message').childNodes[0].remove();
-                                document.querySelector('.won-title').classList.add('hidden');
-                            }
-                            if (firstCellType === 'ch') {
-                                document.querySelector('.won-title').classList = 'won-title';
-                                let textNodeCh = document.createTextNode('Crosses won!');
-                                document.querySelector('.won-message').appendChild(textNodeCh);
-                            }
-                            if (firstCellType === 'r') {
-                                document.querySelector('.won-title').classList = 'won-title';
-                                let textNodeR = document.createTextNode('Toes won!');
-                                document.querySelector('.won-message').appendChild(textNodeR);
-                            }
-                        }
-                     }
                 }
+                if (horizontalWinner === true) {
+                    for (let k = i; k < i + rowLength; k += 1) {
+                        document.querySelector(`#c-${[k]}`).classList.add(`${firstCellType}`, 'horizontal', 'win');
+                        if (document.querySelector('.won-message').childNodes[0] instanceof Text) {
+                            document.querySelector('.won-message').childNodes[0].remove();
+                            document.querySelector('.won-title').classList.add('hidden');
+                        }
+                        if (firstCellType === 'ch') {
+                            document.querySelector('.won-title').classList = 'won-title';
+                            let textNodeCh = document.createTextNode('Crosses won!');
+                            document.querySelector('.won-message').appendChild(textNodeCh);
+                        }
+                        if (firstCellType === 'r') {
+                            document.querySelector('.won-title').classList = 'won-title';
+                            let textNodeR = document.createTextNode('Toes won!');
+                            document.querySelector('.won-message').appendChild(textNodeR);
+                        }
+                    }
+                    field.style.pointerEvents = 'none';
+                }
+
                 if (horizontalWinner === true) {
                     return true;
                 }
             }
         }
-        // function verticalWin(cellsArr) {
-        //     let verticalWinner = true;
-        //     for (let i = 0; i < cellsArr.length; i += rowLength) {
-        //         let firstCellType = cellsType(cellsArr[i]); // Определяем доп. класс яцейки (сh - крестик, r - нолик, null - пусто)
-        //         if (!firstCellType) { // Если первая ячейка ряда при вызове на ней функции cellsType будет равна null, то код дальше выполняться не будет, мы перейдем к следующей итерации цикла
-        //             continue;
-        //         }
-        //         for (let j = i; j < i + rowLength; j += 1) {
-        //             if (cellsType(cellsArr[j]) !== firstCellType) { // если доп. класс j ячейчи не соответствует классу первой ячейки в ряду, то прерываем выполнение вложеного цикла
-        //                 verticalWinner = false;
-        //                 break;
-        //             }
-        //             if (j === i + rowLength - 1) {
-        //                 for (let k = j; k >= i; k += - 1) {
-        //                     document.querySelector(`#c-${[k]}`).classList.add(`${firstCellType}`, 'horizontal', 'win');
-        //                     if (document.querySelector('.won-message').childNodes[0] instanceof Text) {
-        //                         document.querySelector('.won-message').childNodes[0].remove();
-        //                         document.querySelector('.won-title').classList.add('hidden');
-        //                     }
-        //                     if (firstCellType === 'ch') {
-        //                         document.querySelector('.won-title').classList = 'won-title';
-        //                         let textNodeCh = document.createTextNode('Crosses won!');
-        //                         document.querySelector('.won-message').appendChild(textNodeCh);
-        //                     }
-        //                     if (firstCellType === 'r') {
-        //                         document.querySelector('.won-title').classList = 'won-title';
-        //                         let textNodeR = document.createTextNode('Toes won!');
-        //                         document.querySelector('.won-message').appendChild(textNodeR);
-        //                     }
-        //                 }
-        //              }
-        //         }
-        //         if (verticalWinner === true) {
-        //             return true;
-        //         }
-        //     }
-        // }
-        //
-        // verticalWin(cellsArr)
+
+        function verticalWin(cellsArr) {
+            for (let i = 0; i < rowLength; i += 1) {
+                let verticalWinner = true;
+                let firstCellType = cellsType(cellsArr[i]); // Определяем доп. класс яцейки (сh - крестик, r - нолик, null - пусто)
+                if (!firstCellType) { // Если первая ячейка ряда при вызове на ней функции cellsType будет равна null, то код дальше выполняться не будет, мы перейдем к следующей итерации цикла
+                    continue;
+                }
+                for (let j = i; j < cellsArr.length; j += rowLength) {
+                    if (firstCellType !== cellsType(cellsArr[j])) { // если доп. класс j ячейчи не соответствует классу первой ячейки в ряду, то прерываем выполнение вложеного цикла
+                        verticalWinner = false;
+                        break;
+                    }
+                }
+
+                if (verticalWinner === true) {
+                    for (let k = i; k < cellsArr.length; k += rowLength) {
+                        document.querySelector(`#c-${[k]}`).classList.add(`${firstCellType}`, 'vertical', 'win');
+                        if (document.querySelector('.won-message').childNodes[0] instanceof Text) {
+                            document.querySelector('.won-message').childNodes[0].remove();
+                            document.querySelector('.won-title').classList.add('hidden');
+                        }
+                        if (firstCellType === 'ch') {
+                            document.querySelector('.won-title').classList = 'won-title';
+                            let textNodeCh = document.createTextNode('Crosses won!');
+                            document.querySelector('.won-message').appendChild(textNodeCh);
+                        }
+                        if (firstCellType === 'r') {
+                            document.querySelector('.won-title').classList = 'won-title';
+                            let textNodeR = document.createTextNode('Toes won!');
+                            document.querySelector('.won-message').appendChild(textNodeR);
+                        }
+                    }
+                    field.style.pointerEvents = 'none';
+                }
+                if (verticalWinner === true) {
+                    return true;
+                }
+            }
+        }
+
+        function rightDiagonalWin(cellsArr) {
+            let rightDiagonalWinner = true;
+            let firstCellType = cellsType(cellsArr[0]);
+            for (let i = 0; i < cellsArr.length; i += rowLength + 1) {
+                if (!firstCellType) {
+                    continue;
+                }
+                if (firstCellType !== cellsType(cellsArr[i])) { // если доп. класс j ячейчи не соответствует классу первой ячейки в ряду, то прерываем выполнение вложеного цикла
+                    rightDiagonalWinner = false;
+                    break;
+                }
+                if (i === cellsArr.length - 1) {
+                    for (let j = 0; j < cellsArr.length; j += rowLength + 1) {
+                        document.querySelector(`#c-${[j]}`).classList.add(`${firstCellType}`, 'diagonal-right', 'win');
+                        if (document.querySelector('.won-message').childNodes[0] instanceof Text) {
+                            document.querySelector('.won-message').childNodes[0].remove();
+                            document.querySelector('.won-title').classList.add('hidden');
+                        }
+                        if (firstCellType === 'ch') {
+                            document.querySelector('.won-title').classList = 'won-title';
+                            let textNodeCh = document.createTextNode('Crosses won!');
+                            document.querySelector('.won-message').appendChild(textNodeCh);
+                        }
+                        if (firstCellType === 'r') {
+                            document.querySelector('.won-title').classList = 'won-title';
+                            let textNodeR = document.createTextNode('Toes won!');
+                            document.querySelector('.won-message').appendChild(textNodeR);
+                        }
+                    }
+                    field.style.pointerEvents = 'none';
+                }
+            }
+            if (rightDiagonalWinner === true) {
+                return true;
+            }
+        }
+
+        function leftDiagonalWin(cellsArr) {
+            let leftDiagonalWinner = true;
+            let firstCellType = cellsType(cellsArr[rowLength - 1]);
+            for (let i = rowLength - 1; i < cellsArr.length - 1; i += rowLength - 1) {
+                if (!firstCellType) {
+                    continue;
+                }
+                if (firstCellType !== cellsType(cellsArr[i])) { // если доп. класс j ячейчи не соответствует классу первой ячейки в ряду, то прерываем выполнение вложеного цикла
+                    leftDiagonalWinner = false;
+                    break;
+                }
+                if (i === cellsArr.length - rowLength) {
+                    for (let j = rowLength - 1; j < cellsArr.length - 1; j += rowLength - 1) {
+                        document.querySelector(`#c-${[j]}`).classList.add(`${firstCellType}`, 'diagonal-left', 'win');
+                        if (document.querySelector('.won-message').childNodes[0] instanceof Text) {
+                            document.querySelector('.won-message').childNodes[0].remove();
+                            document.querySelector('.won-title').classList.add('hidden');
+                        }
+                        if (firstCellType === 'ch') {
+                            document.querySelector('.won-title').classList = 'won-title';
+                            let textNodeCh = document.createTextNode('Crosses won!');
+                            document.querySelector('.won-message').appendChild(textNodeCh);
+                        }
+                        if (firstCellType === 'r') {
+                            document.querySelector('.won-title').classList = 'won-title';
+                            let textNodeR = document.createTextNode('Toes won!');
+                            document.querySelector('.won-message').appendChild(textNodeR);
+                        }
+                    }
+                    field.style.pointerEvents = 'none';
+                }
+            }
+            if (leftDiagonalWinner === true) {
+                return true;
+            }
+        }
+
+        function draw(cellsArr) {
+            for (let i = 0; i < cellsArr.length; i += 1) {
+                if (!cellsType(cellsArr[i]) || !cellsType(cellsArr[i])) {
+                    break;
+                }
+                if (i === cellsArr.length - 1) {
+                    if (document.querySelector('.won-message').childNodes[0] instanceof Text) {
+                        document.querySelector('.won-message').childNodes[0].remove();
+                        document.querySelector('.won-title').classList.add('hidden');
+                    }
+                    document.querySelector('.won-title').classList = 'won-title';
+                    let textNodeR = document.createTextNode('It\'s a draw!');
+                    document.querySelector('.won-message').appendChild(textNodeR);
+                }
+
+            }
+        }
+
+        draw(cellsArr);
+
+        leftDiagonalWin(cellsArr);
+
+        rightDiagonalWin(cellsArr);
+
+        verticalWin(cellsArr);
 
         horizontalWin(cellsArr);
 
@@ -120,10 +207,11 @@ function app() {
             if (cellsArr.classList.contains('r')) {
                 return 'r';
             }
-            return  null;
+            return null;
         }
 
     }
+
     win();
 
     function setStorage() {
