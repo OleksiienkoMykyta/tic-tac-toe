@@ -13,11 +13,17 @@ module.exports = {
                 test: /\.js$/,
 
             },
+            {
+                test: /\.css$/i,
+                use: ["style-loader", "css-loader"],
+            },
         ],
     },
     output: {
         filename: '[name].[hash].bundle.js',
         path: path.resolve(__dirname, 'dist'),
     },
-    plugins: [new HtmlWebpackPlugin()],
+    plugins: [new HtmlWebpackPlugin({
+        template: 'src/index.html'
+    })],
 };
